@@ -1,6 +1,12 @@
 package com.projetofinal5.ProjetoFinal5.controller;
 
 
+import com.projetofinal5.ProjetoFinal5.dto.LoginResponseDTO;
+import com.projetofinal5.ProjetoFinal5.dto.RegisterDTO;
+import com.projetofinal5.ProjetoFinal5.dto.UserDTO;
+import com.projetofinal5.ProjetoFinal5.entity.UserEntity;
+import com.projetofinal5.ProjetoFinal5.service.TokenService;
+import com.projetofinal5.ProjetoFinal5.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
