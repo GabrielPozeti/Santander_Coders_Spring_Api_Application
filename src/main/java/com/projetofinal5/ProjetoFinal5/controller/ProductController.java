@@ -1,42 +1,51 @@
 package com.projetofinal5.ProjetoFinal5.controller;
 
-import com.projetofinal5.ProjetoFinal5.entity.Product;
-import com.projetofinal5.ProjetoFinal5.service.ProductService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+
 @RestController
-@RequiredArgsConstructor
-public class ProductController {
+@RequestMapping("/produto")
+public class ProdutoController {
 
-    private final ProductService productService;
+    @Autowired
+    private ProdutoService produtoService;
 
-    @PostMapping(value="/saveOrUpdate")
-    public ResponseEntity<Void> saveOrUpdateProduct(@RequestBody Product product) {
-        productService.saveOrUpdateProduct(product);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PostMapping("/criar-produto")
+    public ResponseEntity<List<ProdutoDTO>> criarProduto(@RequestBody ProdutoListDTO produtoListDTO) {
+        List<ProdutoDTO> novoProduto = produtoService.criarProduto(produtoListDTO);
+        return new ResponseEntity<>(novoProduto, HttpStatus.CREATED);
     }
 
-    @DeleteMapping(value="/delete/{productId}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable (value = "productId", required = true) String productId) {
-        productService.deleteProduct(productService.getProduct(Integer.parseInt(productId)));
-        return new ResponseEntity<>(HttpStatus.OK);
+    @GetMapping("/todos")
+    public ResponseEntity<List<ProdutoDTO>> listarProduto() {
+        return ResponseEntity.ok().body(produtoService.listarTodosProdutos());
     }
 
-    @GetMapping(value="/getAll")
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> allProducts = productService.getAllProducts();
-        return new ResponseEntity<>(allProducts,HttpStatus.OK);
+    @GetMapping("/{id}")
+    public ProdutoDTO buscarProdutoPorId(@PathVariable Long id) {
+        return produtoService.buscarProdutoPorId(id);
     }
 
-    @GetMapping(value="/getOne")
-    public ResponseEntity<Product> getOneProduct(@RequestParam("productId") String productId) {
-        Product product = productService.getProduct(Integer.parseInt(productId));
-        return ResponseEntity.ok(product);
+    @PutMapping("/atualizar-produto/{id}")
+    public ResponseEntity<ProdutoDTO> atualizarProduto(@PathVariable Long id, @RequestBody ProdutoDTO produtoDTO) {
+        return ResponseEntity.ok().body(produtoService.atualizarProduto(id, produtoDTO));
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarProduto(@PathVariable Long id) {
+        try {
+            produtoService.deletarProduto(id);
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }

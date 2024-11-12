@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("consulta-cep")
-public class ConsultacCepAPI {
+public class ConsultaCepAPI {
 
     @GetMapping("{cep}")
     public CepResultDTO consultaCep(@PathVariable("cep") String cep) {
