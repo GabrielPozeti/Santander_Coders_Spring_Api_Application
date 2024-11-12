@@ -1,6 +1,6 @@
 package com.projetofinal5.ProjetoFinal5.service;
 
-
+import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
@@ -12,8 +12,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
-import static org.springframework.security.config.Elements.JWT;
-
 @Service
 public class TokenService {
 
@@ -22,17 +20,16 @@ public class TokenService {
     @Value("${jwt-secret}")
     private String secret;
 
-
     public String generateToken(UserEntity user) throws JWTCreationException {
-
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            return JWT.create().withIssuer(ISSUER)
+            return JWT.create()
+                    .withIssuer(ISSUER)
                     .withSubject(user.getLogin())
                     .withExpiresAt(getExpiration())
                     .sign(algorithm);
         } catch (JWTCreationException exception) {
-            throw new RuntimeException("Erro while generating token", exception);
+            throw new RuntimeException("Error while generating token", exception);
         }
     }
 
@@ -44,12 +41,10 @@ public class TokenService {
                     .build()
                     .verify(token)
                     .getSubject();
-
         } catch (JWTVerificationException exception) {
-            throw new RuntimeException("Error while validate token", exception);
+            throw new RuntimeException("Error while validating token", exception);
         }
     }
-
 
     private Instant getExpiration() {
         return LocalDateTime.now().plusMinutes(10).toInstant(ZoneOffset.of("-03:00"));

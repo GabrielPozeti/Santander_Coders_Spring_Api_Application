@@ -20,8 +20,7 @@ public class UserService {
 
     public void saveUser(RegisterDTO registerDTO) {
         String passwordEncrypted = new BCryptPasswordEncoder().encode(registerDTO.password());
-        UserEntity user = new UserEntity(registerDTO.login(), passwordEncrypted, RegisterDTO.userRole());
+        UserEntity user = new UserEntity(registerDTO.login(), passwordEncrypted, registerDTO.userRole());
         userRepository.save(user);
     }
-
 }
