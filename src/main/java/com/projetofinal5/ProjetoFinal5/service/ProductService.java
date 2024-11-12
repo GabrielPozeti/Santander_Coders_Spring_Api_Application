@@ -3,6 +3,7 @@ package com.projetofinal5.ProjetoFinal5.service;
 import com.projetofinal5.ProjetoFinal5.dto.ProductDTO;
 import com.projetofinal5.ProjetoFinal5.dto.ProductListDTO;
 import com.projetofinal5.ProjetoFinal5.entity.ProductEntity;
+import com.projetofinal5.ProjetoFinal5.mappers.ProductMapper;
 import com.projetofinal5.ProjetoFinal5.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class ProdutoService {
+public class ProductService {
 
     @Autowired
     private ProductRepository produtoRepository;
