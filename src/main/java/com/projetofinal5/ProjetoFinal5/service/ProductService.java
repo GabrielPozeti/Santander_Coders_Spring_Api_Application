@@ -1,41 +1,74 @@
 package com.projetofinal5.ProjetoFinal5.service;
 
-import com.projetofinal5.ProjetoFinal5.dao.ProductDao;
-import com.projetofinal5.ProjetoFinal5.entity.Product;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import com.projetofinal5.ProjetoFinal5.dto.ProductDTO;
+import com.projetofinal5.ProjetoFinal5.dto.ProductListDTO;
+import com.projetofinal5.ProjetoFinal5.entity.ProductEntity;
+import com.projetofinal5.ProjetoFinal5.repository.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-@Transactional
-@RequiredArgsConstructor
-@Slf4j
+public class ProdutoService {
 
-public class ProductService {
+    @Autowired
+    private ProductRepository produtoRepository;
+
+    @Autowired
+    private ProductMapper produtoMapper;
+    @Autowired
+    private ProductRepository productRepository;
 
 
-    private final ProductDao productDao;
+    public List<ProductDTO> criarProduto(ProductListDTO produtoListDTO) {
+        List<ProductEntity> produtoEntities = produtoListDTO.getProdutoList().stream()
+                .map(produtoMapper::toEntity)
+                .collect(Collectors.toList());
 
-    public void saveOrUpdateProduct(Product product) {
-        log.info("Inserindo produto: {}", product);
-        productDao.save(product);
+        List<ProductEntity> produtosSalvos = productRepository.saveAll(produtoEntities);
+
+        return produtosSalvos.stream()
+                .map(produtoMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public List<Product> getAllProducts() {
-    log.info("Buscando todos os produtos");
-        return productDao.findAll();
+    public ProductDTO buscarProdutoPorId(Long id) {
+        ProductEntity produtoEntity = produtoRepository.findById(id).orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Produto com id" + id + "não encontrado"));
+        return produtoMapper.toDTO(produtoEntity);
     }
 
-    public Product getProduct(int ProductId) {
-        log.info("Buscando produto por id: {}", ProductId);
-        return productDao.findById(ProductId).orElse(null);
+    public List<ProductDTO> listarTodosProdutos() {
+        List<ProductEntity> produtoEntities = produtoRepository.findAll();
+        return produtoEntities.stream().map(produtoMapper::toDTO).collect(Collectors.toList());
     }
 
-    public void deleteProduct(Product product) {
-        log.info("Deletando o produto: {}", product);
-        productDao.delete(product);
+    public ProductDTO atualizarProduto(Long id, ProductDTO produtoDTO) {
+        Optional<ProductEntity> produtoEntity = produtoRepository.findById(id);
+        if (produtoEntity.isPresent()) {
+            ProductEntity produtoExistente = produtoEntity.get();
+            produtoMapper.atualizarProduto(produtoDTO, produtoExistente);
+            ProductEntity produtoSalvo = produtoRepository.save(produtoExistente);
+
+            return produtoMapper.toDTO(produtoSalvo);
+        } else {
+            throw new EntityNotFoundException("Produto não encontrado com id " + id);
+        }
     }
+
+
+    public void deletarProduto(Long id) {
+        ProductEntity produtoExistente = produtoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Produto não encontrado com id " + id));
+
+        produtoRepository.delete(produtoExistente);
+    }
+
+
 }
