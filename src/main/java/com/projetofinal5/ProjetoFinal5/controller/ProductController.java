@@ -2,6 +2,7 @@ package com.projetofinal5.ProjetoFinal5.controller;
 
 import com.projetofinal5.ProjetoFinal5.dto.ProductDTO;
 import com.projetofinal5.ProjetoFinal5.dto.ProductListDTO;
+import com.projetofinal5.ProjetoFinal5.entity.ProductEntity;
 import com.projetofinal5.ProjetoFinal5.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +21,8 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping("/criar-produto")
-    public ResponseEntity<List<ProductDTO>> criarProduto(@RequestBody ProductListDTO produtoListDTO) {
-        List<ProductDTO> novoProduto = productService.criarProduto(produtoListDTO);
+    public ResponseEntity<List<ProductEntity>> criarProduto(@RequestBody ProductListDTO produtoListDTO) {
+        List<ProductEntity> novoProduto = productService.criarProduto(produtoListDTO);
         return new ResponseEntity<>(novoProduto, HttpStatus.CREATED);
     }
 

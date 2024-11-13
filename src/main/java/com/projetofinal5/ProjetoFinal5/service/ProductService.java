@@ -27,16 +27,8 @@ public class ProductService {
     private ProductRepository productRepository;
 
 
-    public List<ProductDTO> criarProduto(ProductListDTO produtoListDTO) {
-        List<ProductEntity> produtoEntities = produtoListDTO.getProdutoList().stream()
-                .map(produtoMapper::toEntity)
-                .collect(Collectors.toList());
-
-        List<ProductEntity> produtosSalvos = productRepository.saveAll(produtoEntities);
-
-        return produtosSalvos.stream()
-                .map(produtoMapper::toDTO)
-                .collect(Collectors.toList());
+    public List<ProductEntity> criarProduto(ProductListDTO produtoListDTO) {
+        return productRepository.saveAll(produtoListDTO.getProdutoList());
     }
 
     public ProductDTO buscarProdutoPorId(Long id) {
